@@ -1,6 +1,6 @@
 
 function [x,b]=prad_inv_I0(X,I,I0, KB, x0, b0)
-%% PRAD_INV: solve prad inverse problem
+%% PRAD_INV_I0: solve prad inverse problem
 % 
 % Given the proton mapping x' = x + b/KB,
 % where b is the line-integrated magnetic field, and KB a constant,
@@ -17,7 +17,7 @@ function [x,b]=prad_inv_I0(X,I,I0, KB, x0, b0)
 % X: spatial coordinate of data
 % I: measured proton fluence at points X
 % I0: undisturbed proton fluence at points X
-%     I0 can be a singleton, then I0 is assumed constant over domain
+%     if I0 is a scalar, indicates uniform through domain
 % KB = deflection parameter (constant)
 % optional (x0, b0) = starting point from which to start integration;
 %   defaults to (x0=x(1),b0=0) if not specified.
@@ -45,11 +45,18 @@ function [x,b]=prad_inv_I0(X,I,I0, KB, x0, b0)
             disp(sprintf('db/dx warning: out of bounds at x = %f, b=%f, x'' = %f', x, b, xp))
         end
 
+        % if I0 is a vector interpolate to x
+        if length(I0)>1
+            I0x = interp1(X0, I0, x, 'linear', 'extrap');
+
+        % else I0 scalar -> no interpolation, just use I0
+        else
+            I0x = I0;
+        end
         
-        I0 = interp1(X0, I0, x, 'linear', 'extrap');
-        Ip = interp1(X0, I, xp, 'linear', 'extrap');
+        Ixp = interp1(X0, I, xp, 'linear', 'extrap');
         
-        dbdx = KB * (I0./Ip-1);
+        dbdx = KB * (I0x./Ixp - 1);
     
     end
 
@@ -88,17 +95,11 @@ if length(I0)>1 && any( size(I0) ~= size(X) )
 end
 
 
-% if I0 is a scalar, assume user means constant fluence of value I0
-if (length(I0) == 1)
-   I0 = I0 + 0*I;
-end
-
 % Requested final domains -- make sure to include starting point x0
 Xdomain = unique( sort ([X; x0]) );
 
 
 % integrate the right domain (x0 <= x) 
-
 
 x1 = [];
 b1 = [];

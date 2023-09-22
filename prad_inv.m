@@ -18,7 +18,8 @@ function [x,b, I0r]=prad_inv(X0,I,I0, KB, x_bc, b_bc)
 % inputs:
 % X0: spatial coordinate
 % I: measured proton fluence at points X0
-% I0: undisturbed proton fluence at points X0
+% I0: undisturbed proton fluence at points X0.
+%       If I0 is scalar, indicates uniform through domain.
 % nu = deflection parameter (constant)
 % x_bc = [x1 x2] - boundary condition coordinates
 % b_bc = [b1 b2] - boundary condition b field
@@ -64,11 +65,6 @@ if length(I0)>1 && any( size(I0) ~= size(X0) )
     error('prad_inv: Mismatch in size(X0) and size(I0), or I0 should be a scalar')
 end
 
-% if I0 is a scalar, assume user means constant fluence of value I0
-if (length(I0) == 1)
-    I0 = I0 + 0*I;
-end
-
 
 [x_bc,ind] = sort(x_bc);
 b_bc = b_bc(ind);
@@ -86,32 +82,35 @@ xp2 = x2 + b2/KB;
 
 % re-normalize I0 to fit boundary conditions
 
-
 X0_new = unique(sort( [x1; x2; X0] ));
 X0_new = X0_new ( X0_new >= x1 & X0_new <= x2);
 
-I0_new = interp1(X0, I0, X0_new, 'linear', 'extrap');
+% calculate integral I0 dx from x1 to x2
+if length(I0)>1
+    I0_new = interp1(X0, I0, X0_new, 'linear', 'extrap');
+    I0_sum = trapz(X0_new, I0_new);
+else
+    % scalar I0, no interpolation needed
+    I0_sum = abs(x2-x1) * I0;
+end
 
-I0_sum = trapz(X0_new, I0_new);
-
-
+% calculate integral I dx' from x'1 to x'2
 Xp_new = unique(sort( [xp1; xp2; X0] ));
 Xp_new = Xp_new ( Xp_new >= xp1 & Xp_new <= xp2);
 
 I_new = interp1(X0, I, Xp_new, 'linear', 'extrap');
-
 I_sum = trapz(Xp_new, I_new);
 
-
+% renormalized I0 to achieve boundary conditions
 I0r = I0 * (I_sum / I0_sum);
 
-mean(I0r)
-
 % now just call prad_inv_I0 as usual, starting from (x1,B1)
-
 [x,b]=prad_inv_I0(X0,I,I0r, KB, x1, b1);
-    
-I0r = interp1(X0, I0r, x, 'linear' ,'extrap');
+   
+% return I0r, either as scalar, or interpolated to x
+if length(I0)>1
+   I0r = interp1(X0, I0r, x, 'linear' ,'extrap');
+end
 
  
 end
