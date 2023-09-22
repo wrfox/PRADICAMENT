@@ -2,7 +2,7 @@
 Data analysis tools for electromagnetic field measurement by particle deflectometry in plasmas.
 
 
-**PRADICAMENT** [1] is a set of  [2,3] tools for analyzing proton radiography (PRAD) fluence images.
+**PRADICAMENT** [1] is a set of tools for analyzing proton radiography (PRAD) fluence images [2,3] .
 The present scope of the project is a fast algorithm to 
 process 1-D fluence profiles to obtain the line-integrated magnetic or electric field.
 A companion manuscript [1] describes the theory, setup, and notation used here in detail.
@@ -63,7 +63,7 @@ electromagnetic fields according to
 
 $\xi(x)  = (1/K_B) \int d\ell \times \mathbf{B} + (1/K_E) \int \mathbf{E} _\perp d\ell $ 
 
-Here $K_B$ and $K_E$ are constants that relate the proton deflection (in plasma-plane coordinates) to the magnetic and electric fields.  In SI units they are given by 
+Here $K_B$ and $K_E$ are "rigidity" factors that relate the proton deflection (in plasma-plane coordinates) to the magnetic and electric fields.  In SI units they are given by 
 
 $K_B  = (m_p V_p / e) (L_s + L_d) / L_s  L_d$
 
@@ -74,11 +74,11 @@ $K_E  = (m_p V_p^2 / e) (L_s + L_d) / L_s  L_d$
 where $V_p$ is the proton speed, $m_p$ the proton mass, and $e$ the fundamental charge unit.  $K_B$ has units of `T`,
 and $K_E$ has units of `V/m`.
 
-For a given set of electromagnetic fields, it is easy to imagine calculating the forward model
-proton fluence image:  we just numerically calculate many protons mapped according to $x \to x + \xi(x)$, and 
-bin the results.  (This is the routine `prad_fwd`).  
+The routine `prad_fwd` does the forward problem: For a given set of electromagnetic fields, 
+calculate the proton fluence image.  To do so, we numerically calculate many protons mapped according to $x \to x + \xi(x)$, and 
+bin the results.  
  
-**The core routines `prad_inv` and `prad_inv_bc` do the inverse problem (in 1-D), which is to recover $\int d\ell \times B$ given a proton image $I(x)$**
+**The core routines `prad_inv` and `prad_inv_I0` do the inverse problem (in 1-D), which is to recover $\int d\ell \times B$ given a proton image $I(x)$**
 
 A final required input for all routines is the "initial" proton fluence $I_0(x)$, which is the proton fluence *before* it reaches the plasma.  This important quantity is discussed in publication references.  For the purposes of this documentation
 it is taken as a known quantity.
@@ -94,7 +94,7 @@ $I(x)$ = observed proton fluence (reaching the detector, in coordinates of the p
 
 $I_0(x)$ = initial proton fluence (before reaching plasma plane).
 
-$K_B$ = deflection parameter.
+$K_B$ = deflection rigidity factor.
 
 In the routines, $x$ is a vector, and $b$, $I$, and $I_0$ are expected to be vectors of the same shape.  Optionally,
 $I_0$ can be a scalar, in which case it is taken as uniform across the region.
@@ -113,6 +113,8 @@ could then be used for further analysis separating E and B deflections.
 
 # Routines
 
+The routines are meant to be a library used in higher analysis tools. 
+
 Additional documentation is available via inline Matlab help and comments in the files.
 
 ```
@@ -122,18 +124,23 @@ Additional documentation is available via inline Matlab help and comments in the
 * `prad_fwd` is the proton forward model in 1-D.  Given a magnetic field profile `b(x)`, and input proton fluence `I0(x)`, generate
  the forward model observed fluence `I(x)`.
 
+
 ```
-[x,b] = prad_inv(x, I, I0, KB, [optional x0,b0] )
+[x,b] = prad_inv(x, I, I0, KB, x_bc, b_bc)
+```
+* `prad_inv.m` is the proton inverse solver with boundary conditions.   It uses *pair* of boundary conditions on the magnetic field, `(x1, b1), (x2,b2)` where `x_bc = [x1,x2]` and `b_bc = [b1,b2]` and generates a solution which crosses through these points.  To do so, it renormalizes the input fluence $I_0$ to achieve the boundary condition.
+
+ ```
+[x,b] = prad_inv_I0(x, I, I0, KB, [optional x0,b0] )
 ```
 
-* `prad_inv.m` is the proton inverse solver:  Given proton fluence data, obtain the magnetic fields.  Optionally specify a known
+* `prad_inv_I0.m` is the proton inverse solver with specified `I0` profile:  Given proton fluence data, obtain the magnetic fields.  Optionally specify a known
 magnetic field boundary conditions `b=b0` at `x=x0`.
-  
 
-```
-[x,b] = prad_inv_bc(x, I, I0, KB, x_bc, b_bc)
-```
-* `prad_inv_bc.m` is the proton inverse solver with boundary conditions.   It uses *pair* of boundary conditions on the magnetic field, `(x1, b1), (x2,b2)` where `x_bc = [x1,x2]` and `b_bc = [b1,b2]` and generates a solution which crosses through these points.  To do so, it renormalizes the input fluence $I_0$ to achieve the boundary condition
+
+Note: `prad_inv` is expected to be the most common use case.
+`prad_inv_I0` is an auxilliary routine, though can also be called directly.
+
 
 
 # Contributions
