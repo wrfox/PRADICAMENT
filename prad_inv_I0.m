@@ -78,8 +78,13 @@ if size(I0,1) == 1
     I0 = I0';
 end
 
+% commensurate size checks
 if any( size(I) ~= size(X) )
-    error('prad_inv_I0: Mismatch in size(X0) and size(I)')
+    error('prad_inv_I0: Mismatch in size(X) and size(I)')
+end
+
+if length(I0)>1 && any( size(I0) ~= size(X) )
+    error('prad_inv: Mismatch in size(X) and size(I0), or I0 should be a scalar')
 end
 
 

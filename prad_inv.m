@@ -55,17 +55,18 @@ if size(I0,1) == 1
     I0 = I0';
 end
 
+% commensurate size checks
 if any( size(I) ~= size(X0) )
     error('prad_inv: Mismatch in size(X0) and size(I)')
+end
+
+if length(I0)>1 && any( size(I0) ~= size(X0) )
+    error('prad_inv: Mismatch in size(X0) and size(I0), or I0 should be a scalar')
 end
 
 % if I0 is a scalar, assume user means constant fluence of value I0
 if (length(I0) == 1)
     I0 = I0 + 0*I;
-end
-
-if any( size(I0) ~= size(X0) )
-    error('prad_inv: Mismatch in size(X0) and size(I0), or I0 should be a constant')
 end
 
 
