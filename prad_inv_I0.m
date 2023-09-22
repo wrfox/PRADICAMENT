@@ -74,6 +74,10 @@ if size(I,1) == 1
     I = I';
 end
 
+if size(I0,1) == 1
+    I0 = I0';
+end
+
 if any( size(I) ~= size(X) )
     error('prad_inv_I0: Mismatch in size(X0) and size(I)')
 end

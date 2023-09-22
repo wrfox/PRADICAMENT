@@ -42,12 +42,17 @@ if length(b_bc) ~= 2
     error('Expect b_bc = [b1 b2] two element vector')
 end
 
+% transpose to required orientation
 if size(X0,1) == 1
     X0 = X0';
 end
 
 if size(I,1) == 1
     I = I';
+end
+
+if size(I0,1) == 1
+    I0 = I0';
 end
 
 if any( size(I) ~= size(X0) )
