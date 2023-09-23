@@ -38,13 +38,6 @@ function [x,b]=prad_inv_I0(X,I,I0, KB, x0, b0)
     
         xp = x + b/KB;
         
-        if (xp > max(X0))
-            disp(sprintf('db/dx warning: out of bounds at x = %f, b=%f, x'' = %f',  x, b, xp))
-        end 
-        if (xp < min(X0))
-            disp(sprintf('db/dx warning: out of bounds at x = %f, b=%f, x'' = %f', x, b, xp))
-        end
-
         % if I0 is a vector interpolate to x
         if length(I0)>1
             I0x = interp1(X0, I0, x, 'linear', 'extrap');
@@ -91,7 +84,7 @@ if any( size(I) ~= size(X) )
 end
 
 if length(I0)>1 && any( size(I0) ~= size(X) )
-    error('prad_inv: Mismatch in size(X) and size(I0), or I0 should be a scalar')
+    error('prad_inv_I0: Mismatch in size(X) and size(I0), or I0 should be a scalar')
 end
 
 
@@ -124,7 +117,7 @@ end
 
 % interate the left domain X(1) <= x <= x0)
 x2 = [];
-b2= [];
+b2 = [];
 if (x0 > Xdomain(1))
 
     X2 = Xdomain( Xdomain <= x0) ;
@@ -144,6 +137,40 @@ end
 
 %glue domains together    
 x = [x2(end:-1:2); x1];
-b = [b2(end:-1:2); b1];  
+b = [b2(end:-1:2); b1];
+
+% check for out-of-bounds (requiring extrapolation)
+xp = x + b/KB;
+
+oob = (xp > max(X));
+% if I0 not a scalar, test if I0 access is out of bounds
+if length(I0)>1
+    oob = oob | (x > max(X));
+end
     
+if any( oob )
+    obi = find( oob );
+    ob1 = obi(1);
+    ob2 = obi(end);
+    disp(sprintf('prad_inv warning: out of bounds extrapolation'));
+    disp(sprintf('    for x = [%f..%f], b=[%f..%f], x'' = [%f..%f]', ...
+        x(ob1), x(ob2), b(ob1), b(ob2), xp(ob1), xp(ob2) ));
+end
+
+oob = (xp < min(X));
+% if I0 not a scalar, test if I0 access is out of bounds
+if length(I0)>1
+    oob = oob | (x < min(X));
+end
+
+if any( oob )
+    obi = find( oob );
+    ob1 = obi(1);
+    ob2 = obi(end);
+    disp(sprintf('prad_inv warning: out of bounds extrapolation'));
+    disp(sprintf('    for x = [%f..%f], b=[%f..%f], x'' = [%f..%f]', ...
+        x(ob1), x(ob2), b(ob1), b(ob2), xp(ob1), xp(ob2) ));
+end
+
+
 end
