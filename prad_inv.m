@@ -1,6 +1,6 @@
 
-function [x,b, I0r]=prad_inv_bc(X0,I,I0, KB, x_bc, b_bc)
-%% PRAD_INV_BC: solve prad inverse problem with boundary conditions
+function [x,b, I0r]=prad_inv(X0,I,I0, KB, x_bc, b_bc)
+%% PRAD_INV: solve prad inverse problem with boundary conditions
 % 
 % Given the proton mapping x' = x + b/KB,
 % where b is the line-integrated magnetic field, and KB a constant,
@@ -13,7 +13,7 @@ function [x,b, I0r]=prad_inv_bc(X0,I,I0, KB, x_bc, b_bc)
 % such that the boundary conditions {x_bc, b_bc} are satisfied.
 % I0 is renormalized to satisfy boundary conditions.
 %
-% [x,b,I0r] =  PRAD_INV_BC (X, I, I0, KB, x_bc, b_bc)
+% [x,b,I0r] =  PRAD_INV (X, I, I0, KB, x_bc, b_bc)
 %
 % inputs:
 % X0: spatial coordinate
