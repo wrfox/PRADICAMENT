@@ -32,7 +32,7 @@ function [x,b, I0r]=prad_inv_bc(X0,I,I0, KB, x_bc, b_bc)
 % are out of the data domain of X.   Simple extrapolation is used 
 % to allow moderately out of domain data in this case, but you are warned.
 %
-% See also prad_inv, prad_fwd
+% See also prad_inv_I0, prad_fwd
 
 if length(x_bc) ~= 2
     error('Expect x_bc = [x1 x2] two element vector')
@@ -101,9 +101,9 @@ I0r = I0 * (I_sum / I0_sum);
 
 mean(I0r)
 
-% now just call prad_inv as usual, starting from (x1,B1)
+% now just call prad_inv_I0 as usual, starting from (x1,B1)
 
-[x,b]=prad_inv(X0,I,I0r, KB, x1, b1);
+[x,b]=prad_inv_I0(X0,I,I0r, KB, x1, b1);
     
 I0r = interp1(X0, I0r, x, 'linear' ,'extrap');
 

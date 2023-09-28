@@ -1,5 +1,5 @@
 
-function [x,b]=prad_inv(X,I,I0, KB, x0, b0)
+function [x,b]=prad_inv_I0(X,I,I0, KB, x0, b0)
 %% PRAD_INV: solve prad inverse problem
 % 
 % Given the proton mapping x' = x + b/KB,
@@ -11,7 +11,7 @@ function [x,b]=prad_inv(X,I,I0, KB, x0, b0)
 %
 % The inverse problem solves for b(x) given I and I0 as data
 %
-% [x,b] =  PRAD_INV (X, I, I0, KB, <optional> x0, <optional> b0)
+% [x,b] =  PRAD_INV_I0 (X, I, I0, KB, <optional> x0, <optional> b0)
 %
 % inputs:
 % X: spatial coordinate of data
@@ -30,7 +30,7 @@ function [x,b]=prad_inv(X,I,I0, KB, x0, b0)
 % are out of the data domain of X.   Simple extrapolation is used 
 % to allow moderately out of domain data in this case, but you are warned.
 %
-% See also prad_inv_bc, prad_fwd
+% See also prad_inv, prad_fwd
 
 
 % Helper function for ODE solver
@@ -75,7 +75,7 @@ if size(I,1) == 1
 end
 
 if any( size(I) ~= size(X) )
-    error('prad_inv: Mismatch in size(X0) and size(I)')
+    error('prad_inv_I0: Mismatch in size(X0) and size(I)')
 end
 
 
