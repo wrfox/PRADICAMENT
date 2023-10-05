@@ -12,9 +12,9 @@ The routines are currently written in Matlab.  The 1-D algorithm is complementar
 
 References:
 
-[1] W. Fox et al, Proton deflectometry analysis in magnetized plasmas: magnetic field reconstruction in 1-D.  Submitted (2023)
+[1] [W. Fox et al., Proton deflectometry analysis in magnetized plasmas: magnetic field reconstruction in 1-D. (2023), arXiv: https://arxiv.org/abs/2309.16165](https://arxiv.org/abs/2309.16165)
 
-[2] [N. L. Kugland, et al. Invited Article: Relation between electric and magnetic field structures and their proton-beam images. Review of Scientific Instruments 83, 101301 (2012).](https:/doi.org/10.1063/1.4750234)
+[2] [N. L. Kugland, et al. Invited Article: Relation between electric and magnetic field structures and their proton-beam images. Review of Scientific Instruments 83, 101301 (2012).](https://doi.org/10.1063/1.4750234)
 
 [3] [D. B. Schaeffer, et al,  Proton imaging of high-energy-density laboratory plasmas. (2023).](https://arxiv.org/abs/2212.08252)
 
